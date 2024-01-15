@@ -1,0 +1,521 @@
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
+import tester.Tester;
+import javalib.impworld.*;
+import javalib.worldimages.*;
+//floodit
+
+// examples
+class ExamplesFloodIt {
+  ExamplesFloodIt() {
+  }
+  int cellSize;
+  int buffer;
+  Random seed;
+
+  ACell emptyCell;
+  ACell redCell;
+  ACell orangeCell;
+  ACell yellowCell;
+  ACell greenCell;
+  ACell blueCell;
+  ACell magentaCell;
+  ACell whiteCell;
+  ACell blackCell;
+  ACell grayCell;
+
+  Color emptyColor;
+
+  // for testing link
+  ACell redCellLink;
+  ACell orangeCellLink;
+  ACell yellowCellLink;
+  ACell greenCellLink;
+  ACell blueCellLink;
+  ACell magentaCellLink;
+  ACell whiteCellLink;
+  ACell blackCellLink;
+  ACell grayCellLink;
+
+  ArrayList<ACell> row0;
+  ArrayList<ACell> row1;
+  ArrayList<ACell> row2;
+  ArrayList<ACell> row3;
+  ArrayList<ACell> row4;
+
+  ArrayList<ACell> row0Link;
+  ArrayList<ACell> row1Link;
+  ArrayList<ACell> row2Link;
+  ArrayList<ACell> row3Link;
+  ArrayList<ACell> row4Link;
+
+  ArrayList<ArrayList<ACell>> testBoard;
+  ArrayList<ArrayList<ACell>> testLinkBoard;
+
+  FloodItWorld starterWorld;
+  FloodItWorld otherWorld;
+  FloodItWorld testWorld;
+  FloodItWorld emptyWorld;
+
+  WorldScene testWorldScene;
+  WorldScene emptyWorldScene;
+
+  // to initialize our data
+  void initData() {
+
+    this.cellSize = 20;
+    this.buffer = 50;
+    this.emptyColor = Color.black;
+    this.seed = new Random(100);
+    // FOR TESTBOARD
+    // cells
+    this.emptyCell = new MtCell(1, 0);
+    this.redCell = new ConsCell(1, 1, Color.red);
+    this.orangeCell = new ConsCell(1, 2, Color.orange);
+    this.yellowCell = new ConsCell(1, 3, Color.yellow);
+    this.greenCell = new ConsCell(2, 1, Color.green);
+    this.blueCell = new ConsCell(2, 2, Color.blue);
+    this.magentaCell = new ConsCell(2, 3, Color.magenta);
+    this.whiteCell = new ConsCell(3, 1, Color.white);
+    this.grayCell = new ConsCell(3, 2, Color.gray);
+    this.blackCell = new ConsCell(3, 3, Color.black);
+
+    // board
+    this.testBoard = new ArrayList<ArrayList<ACell>>();
+
+    // rows
+    this.row0 = new ArrayList<ACell>();
+    this.row1 = new ArrayList<ACell>();
+    this.row2 = new ArrayList<ACell>();
+    this.row3 = new ArrayList<ACell>();
+    this.row4 = new ArrayList<ACell>();
+
+    for (int i = 0; i < 5; i++) {
+      this.row0.add(new MtCell(0, i));
+      this.row4.add(new MtCell(4, i));
+    }
+
+    this.row1.add(new MtCell(1, 0));
+    this.row1.add(this.redCell);
+    this.row1.add(this.orangeCell);
+    this.row1.add(this.yellowCell);
+    this.row1.add(new MtCell(1, 4));
+
+    this.row2.add(new MtCell(1, 0));
+    this.row2.add(this.greenCell);
+    this.row2.add(this.blueCell);
+    this.row2.add(this.magentaCell);
+    this.row2.add(new MtCell(2, 4));
+
+    this.row3.add(new MtCell(3, 0));
+    this.row3.add(this.whiteCell);
+    this.row3.add(this.grayCell);
+    this.row3.add(this.blackCell);
+    this.row3.add(new MtCell(3, 4));
+
+    this.testBoard.add(this.row0);
+    this.testBoard.add(this.row1);
+    this.testBoard.add(this.row2);
+    this.testBoard.add(this.row3);
+    this.testBoard.add(this.row4);
+
+    // linking the rows
+    this.redCell.link(this.testBoard);
+    this.orangeCell.link(this.testBoard);
+    this.yellowCell.link(this.testBoard);
+    this.greenCell.link(this.testBoard);
+    this.blueCell.link(this.testBoard);
+    this.magentaCell.link(this.testBoard);
+    this.whiteCell.link(this.testBoard);
+    this.blackCell.link(this.testBoard);
+    this.grayCell.link(this.testBoard);
+
+    // for TESTLINKBOARD
+    // cells
+    this.redCellLink = new ConsCell(3, 1, Color.red);
+    this.orangeCellLink = new ConsCell(3, 2, Color.orange);
+    this.yellowCellLink = new ConsCell(3, 3, Color.yellow);
+
+    this.greenCellLink = new ConsCell(2, 1, Color.green);
+    this.blueCellLink = new ConsCell(2, 2, Color.blue);
+    this.magentaCellLink = new ConsCell(2, 3, Color.magenta);
+
+    this.whiteCellLink = new ConsCell(1, 1, Color.white);
+    this.grayCellLink = new ConsCell(1, 2, Color.gray);
+    this.blackCellLink = new ConsCell(1, 3, Color.black);
+
+    // testLinkBoard
+    this.testLinkBoard = new ArrayList<ArrayList<ACell>>();
+
+    // rows
+    this.row0Link = new ArrayList<ACell>();
+    this.row1Link = new ArrayList<ACell>();
+    this.row2Link = new ArrayList<ACell>();
+    this.row3Link = new ArrayList<ACell>();
+    this.row4Link = new ArrayList<ACell>();
+
+    for (int i = 0; i < 5; i++) {
+      this.row0Link.add(new MtCell(0, i));
+      this.row4Link.add(new MtCell(4, i));
+    }
+
+    this.row1Link.add(new MtCell(1, 0));
+    this.row1Link.add(this.whiteCellLink);
+    this.row1Link.add(this.grayCellLink);
+    this.row1Link.add(this.blackCellLink);
+    this.row1Link.add(new MtCell(1, 4));
+
+    this.row2Link.add(new MtCell(1, 0));
+    this.row2Link.add(this.greenCellLink);
+    this.row2Link.add(this.blueCellLink);
+    this.row2Link.add(this.magentaCellLink);
+    this.row2Link.add(new MtCell(2, 4));
+
+    this.row3Link.add(new MtCell(3, 0));
+    this.row3Link.add(this.redCellLink);
+    this.row3Link.add(this.orangeCellLink);
+    this.row3Link.add(this.yellowCellLink);
+    this.row3Link.add(new MtCell(3, 4));
+
+    this.testLinkBoard.add(this.row0Link);
+    this.testLinkBoard.add(this.row1Link);
+    this.testLinkBoard.add(this.row2Link);
+    this.testLinkBoard.add(this.row3Link);
+    this.testLinkBoard.add(this.row4Link);
+
+    this.starterWorld = new FloodItWorld(10, 8, this.seed);
+    this.otherWorld = new FloodItWorld(20, 3, this.seed);
+    this.testWorld = new FloodItWorld(3, 4, this.seed);
+    this.emptyWorld = new FloodItWorld(1, 1, this.seed);
+
+    this.testWorldScene = new WorldScene(800, 800);
+    this.emptyWorldScene = new WorldScene(800, 800);
+
+    // adding to emptyWorldScene
+    for (int rowCount = 0; rowCount < this.emptyWorld.boardSize; rowCount++) {
+      int rowCord = this.cellSize * rowCount + this.buffer;
+
+      for (int columnCount = 0; columnCount < this.emptyWorld.boardSize; columnCount++) {
+        int colCord = this.cellSize * columnCount + this.buffer;
+
+        ACell cell = this.emptyWorld.board.get(rowCount).get(columnCount);
+        this.emptyWorldScene.placeImageXY(cell.drawCell(), rowCord, colCord);
+
+      }
+    }
+
+    // adding to testWorldScene
+    for (int rowCount = 0; rowCount < this.testWorld.boardSize; rowCount++) {
+      int rowCord = this.cellSize * rowCount + this.buffer;
+
+      for (int columnCount = 0; columnCount < this.testWorld.boardSize; columnCount++) {
+        int colCord = this.cellSize * columnCount + this.buffer;
+
+        ACell cell = this.testWorld.board.get(rowCount).get(columnCount);
+        this.testWorldScene.placeImageXY(cell.drawCell(), rowCord, colCord);
+
+      }
+    }
+
+  }
+
+  // tests for link method
+  void testLink(Tester t) {
+    this.initData();
+
+    this.emptyCell.link(testBoard);
+    t.checkExpect(this.redCell.left, this.emptyCell);
+
+    this.redCellLink.link(this.testLinkBoard);
+    t.checkExpect(this.redCellLink.left, new MtCell(3, 0));
+    t.checkExpect(this.redCellLink.right, this.orangeCellLink);
+    t.checkExpect(this.redCellLink.top, this.greenCellLink);
+    t.checkExpect(this.redCellLink.bottom, new MtCell(4, 1));
+
+    this.magentaCellLink.link(this.testLinkBoard);
+    t.checkExpect(this.magentaCellLink.left, this.blueCellLink);
+    t.checkExpect(this.magentaCellLink.right, new MtCell(2, 4));
+    t.checkExpect(this.magentaCellLink.top, this.blackCellLink);
+    t.checkExpect(this.magentaCellLink.bottom, this.yellowCellLink);
+
+    this.blackCellLink.link(this.testLinkBoard);
+    t.checkExpect(this.blackCellLink.left, this.grayCellLink);
+    t.checkExpect(this.blackCellLink.right, new MtCell(1, 4));
+    t.checkExpect(this.blackCellLink.top, new MtCell(0, 3));
+    t.checkExpect(this.blackCellLink.bottom, this.magentaCellLink);
+
+  }
+
+  // tests for changeLeft method
+  void testChangeLeft(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.redCell.left, new MtCell(1, 0));
+    this.redCell.changeLeft(this.orangeCell);
+    t.checkExpect(this.redCell.left, this.orangeCell);
+
+    t.checkExpect(this.magentaCell.left, this.blueCell);
+    this.magentaCell.changeLeft(this.greenCell);
+    t.checkExpect(this.magentaCell.left, this.greenCell);
+
+    t.checkExpect(this.blackCell.left, this.grayCell);
+    this.blackCell.changeLeft(this.whiteCell);
+    t.checkExpect(this.blackCell.left, this.whiteCell);
+
+  }
+
+  // tests for changeRight method
+  void testChangeRight(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.redCell.right, this.orangeCell);
+    this.redCell.changeRight(this.magentaCell);
+    t.checkExpect(this.redCell.right, this.magentaCell);
+
+    t.checkExpect(this.magentaCell.right, new MtCell(2, 4));
+    this.magentaCell.changeRight(this.greenCell);
+    t.checkExpect(this.magentaCell.right, this.greenCell);
+
+    t.checkExpect(this.blackCell.right, new MtCell(3, 4));
+    this.blackCell.changeRight(this.yellowCell);
+    t.checkExpect(this.blackCell.right, this.yellowCell);
+
+  }
+
+  // tests for changeTop method
+  void testChangeTop(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.redCell.top, new MtCell(0, 1));
+    this.redCell.changeTop(this.orangeCell);
+    t.checkExpect(this.redCell.top, this.orangeCell);
+
+    t.checkExpect(this.magentaCell.top, this.yellowCell);
+    this.magentaCell.changeTop(this.greenCell);
+    t.checkExpect(this.magentaCell.top, this.greenCell);
+
+    t.checkExpect(this.blackCell.top, this.magentaCell);
+    this.blackCell.changeTop(this.grayCell);
+    t.checkExpect(this.blackCell.top, this.grayCell);
+
+  }
+
+  // tests for changeLeft method
+  void testChangeBottom(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.redCell.bottom, this.greenCell);
+    this.redCell.changeBottom(this.orangeCell);
+    t.checkExpect(this.redCell.bottom, this.orangeCell);
+
+    t.checkExpect(this.magentaCell.bottom, this.blackCell);
+    this.magentaCell.changeBottom(this.greenCell);
+    t.checkExpect(this.magentaCell.bottom, this.greenCell);
+
+    t.checkExpect(this.blackCell.bottom, new MtCell(4, 3));
+    this.blackCell.changeBottom(this.redCell);
+    t.checkExpect(this.blackCell.bottom, this.redCell);
+  }
+
+  // tests for changeColor method
+  void testChangeColor(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.emptyCell.color, this.emptyColor);
+    this.emptyCell.changeColor(7);
+    t.checkExpect(this.emptyCell.color, this.emptyColor);
+
+    t.checkExpect(this.redCell.color, Color.red);
+    this.redCell.changeColor(1);
+    t.checkExpect(this.redCell.color, Color.orange);
+
+    t.checkExpect(this.blackCell.color, Color.black);
+    this.blackCell.changeColor(6);
+    t.checkExpect(this.blackCell.color, Color.magenta);
+
+  }
+
+  // tests for changeColorToCol method
+  void testChangeToColor(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.emptyCell.color, this.emptyColor);
+    this.emptyCell.changeColorToCol(Color.red);
+    t.checkExpect(this.emptyCell.color, this.emptyColor);
+
+    t.checkExpect(this.redCell.color, Color.red);
+    this.redCell.changeColorToCol(Color.orange);
+    t.checkExpect(this.redCell.color, Color.orange);
+
+    t.checkExpect(this.blackCell.color, Color.black);
+    this.blackCell.changeColorToCol(Color.magenta);
+    t.checkExpect(this.blackCell.color, Color.magenta);
+
+  }
+
+  // tests for sameColor method
+  void testSameColor(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.emptyCell.sameColor(this.redCell), false);
+    t.checkExpect(this.redCell.sameColor(this.emptyCell), false);
+    t.checkExpect(this.redCell.sameColor(this.redCellLink), true);
+    t.checkExpect(this.orangeCell.sameColor(this.orangeCellLink), true);
+
+  }
+
+  // tests for drawCell method
+  void testDrawCell(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.redCell.drawCell(),
+        new RectangleImage(this.cellSize, this.cellSize, OutlineMode.SOLID, Color.red));
+    t.checkExpect(this.blueCell.drawCell(),
+        new RectangleImage(this.cellSize, this.cellSize, OutlineMode.SOLID, Color.blue));
+    t.checkExpect(this.magentaCell.drawCell(),
+        new RectangleImage(this.cellSize, this.cellSize, OutlineMode.SOLID, Color.magenta));
+    t.checkExpect(this.emptyCell.drawCell(),
+        new RectangleImage(this.cellSize, this.cellSize, OutlineMode.SOLID, this.emptyColor));
+
+  }
+
+  // tests for floodedList method
+  void testFloodedList(Tester t) {
+    this.initData();
+
+    ArrayList<ACell> alreadyFlooded = new ArrayList<ACell>();
+    t.checkExpect(alreadyFlooded.size(), 0);
+    this.redCell.floodedList(alreadyFlooded, this.blackCell);
+    t.checkExpect(alreadyFlooded.size(), 1);
+
+    this.redCell.floodedList(alreadyFlooded, this.magentaCell);
+    t.checkExpect(alreadyFlooded.size(), 2);
+
+    this.yellowCell.floodedList(alreadyFlooded, this.blueCell);
+    t.checkExpect(alreadyFlooded.size(), 3);
+
+  }
+
+  // tests for makeFloodedList method
+  void testMakeFloodedList(Tester t) {
+    this.initData();
+
+    ArrayList<ACell> alreadyFlooded = new ArrayList<ACell>();
+    t.checkExpect(alreadyFlooded.size(), 0);
+    this.redCell.makeFloodedList(alreadyFlooded, this.blackCell);
+    t.checkExpect(alreadyFlooded.size(), 1);
+    this.redCell.changeLeft(this.redCellLink);
+    t.checkExpect(alreadyFlooded.size(), 1);
+    this.redCell.makeFloodedList(alreadyFlooded, this.blackCell);
+    t.checkExpect(alreadyFlooded.size(), 2);
+
+  }
+
+  // FLOOD IT WORLD TESTS
+
+  // test for a FloodItWorld
+  void testFlood(Tester t) {
+    this.initData();
+    int sceneSize = 800;
+    this.starterWorld.bigBang(sceneSize, sceneSize, 0.2);
+
+  }
+
+  // test for getRandomColor
+  void testGetRandomColor(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.testWorld.getRandomColor(2), Color.yellow);
+    t.checkExpect(this.testWorld.getRandomColor(4), Color.cyan);
+    t.checkExpect(this.testWorld.getRandomColor(6), Color.magenta);
+  }
+
+  // test for makeScene
+  void testMakeScene(Tester t) {
+    this.initData();
+
+    WorldImage timerImage = new TextImage("0 seconds have passed", 20, Color.black);
+
+    WorldImage movesLeftImageEmpty = new TextImage("you have 1 moves left", 20, Color.black);
+    WorldImage movesLeftImageTest = new TextImage("you have 6 moves left", 20, Color.black);
+
+    WorldImage textsTest = new AboveImage(timerImage, movesLeftImageTest);
+    WorldImage textsEmpty = new AboveImage(timerImage, movesLeftImageEmpty);
+
+    WorldImage spacer = new TextImage("", 20, Color.black);
+    this.testWorldScene.placeImageXY(textsTest, 280, buffer + this.cellSize);
+
+    textsEmpty = new AboveImage(textsEmpty, spacer,
+        new TextImage("You Win! Press R to restart", 20, Color.black));
+
+    this.emptyWorldScene.placeImageXY(textsEmpty, 240, buffer + this.cellSize);
+
+    t.checkExpect(this.emptyWorld.makeScene(), this.emptyWorldScene);
+    t.checkExpect(this.testWorld.makeScene(), this.testWorldScene);
+  }
+
+
+  // test for onTick
+  void testOnTick(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.starterWorld.timeTicks, 0);
+    this.starterWorld.onTick();
+    t.checkExpect(this.starterWorld.timeTicks, 1);
+    this.starterWorld.onTick();
+    t.checkExpect(this.starterWorld.timeTicks, 2);
+    this.starterWorld.onTick();
+    t.checkExpect(this.starterWorld.timeTicks, 3);
+
+    t.checkExpect(this.starterWorld.timeSeconds, 0);
+    this.starterWorld.onTick();
+    this.starterWorld.onTick();
+    this.starterWorld.onTick();
+    this.starterWorld.onTick();
+    this.starterWorld.onTick();
+    this.starterWorld.onTick();
+    this.starterWorld.onTick();
+    t.checkExpect(this.starterWorld.timeSeconds, 2);
+    t.checkExpect(this.starterWorld.timeTicks, 10);
+
+  }
+
+  // test for allColorsSame
+  void testAllColorsSame(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.starterWorld.allColorsSame(), false);
+    t.checkExpect(this.testWorld.allColorsSame(), false);
+    t.checkExpect(this.emptyWorld.allColorsSame(), true);
+
+  }
+
+  // test for onKeyEvent
+  void testOnKeyEvent(Tester t) {
+    this.initData();
+
+    this.starterWorld.onTick();
+    this.starterWorld.onTick();
+    this.starterWorld.onTick();
+    t.checkExpect(this.starterWorld.timeTicks, 3);
+    this.starterWorld.onKeyEvent("r");
+    t.checkExpect(this.starterWorld.timeTicks, 0);
+
+  }
+
+  // test for onMousePressed
+  void testOnMousePressed(Tester t) {
+    this.initData();
+
+    t.checkExpect(this.starterWorld.board.get(1).get(1).color, Color.yellow);
+    this.starterWorld.onMousePressed(new Posn(250, 250));
+    t.checkExpect(this.starterWorld.board.get(1).get(1).color, Color.cyan);
+    this.starterWorld.onMousePressed(new Posn(230, 250));
+    t.checkExpect(this.starterWorld.board.get(1).get(1).color, Color.yellow);
+
+    this.starterWorld.onMousePressed(new Posn(250, 230));
+    t.checkExpect(this.starterWorld.board.get(1).get(1).color, Color.orange);
+  }
+}
